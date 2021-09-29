@@ -16,3 +16,6 @@ create table `citp-sm-reactions.reddit_clean_comments.labled_comments_with_inter
                 WHERE BYTE_LENGTH(author) > 0
                 group by author, subreddit) as author_count on author_count.author = sub.author AND author_count.subreddit = sub.subreddit
     );
+--     create table citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc_new as (
+-- SELECT TRIM(subreddit) AS subreddit, intervention, start_date, end_date, start_date_unix_epoc, end_date_unix_epoc
+-- FROM citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc); 
