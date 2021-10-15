@@ -14,7 +14,32 @@ SELECT count(post_id) as ctr_obvs_per_period, subreddit, period FROM (
         FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct`) ctr
     WHERE ctr.period is NOT NULL AND subreddit NOT in (SELECT distinct(subreddit) FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_txt`)
 GROUP BY subreddit, period
+HAVING count(post_id) > 1000
 ORDER BY subreddit, period;
+
+with cart as (
+    SELECT  distinct(ctr.subreddit) as ctr_subreddit, txt.subreddit
+    FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_txt` as txt, `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as ctr
+    WHERE txt.subreddit != ctr.subreddit AND ctr.subreddit not in (select distinct(subreddit) from `citp-sm-reactions.reddit_clean_comments.reaction_interventions_txt`)
+    order by subreddit, ctr_subreddit
+)
+SELECT dt.*, cart.ctr_subreddit, ctr.post_id, ctr.unix_epoc_time,
+    CASE
+        WHEN ctr.unix_epoc_time >= baseline_start AND ctr.unix_epoc_time <= baseline_end THEN 'baseline'
+        WHEN ctr.unix_epoc_time >= upvote_start AND ctr.unix_epoc_time <= upvote_end THEN 'upvote'
+        ELSE 'no_period'
+    END as period
+FROM (SELECT subreddit,
+        min(CASE WHEN intervention = 'baseline' THEN start_date_unix_epoc END) AS baseline_start,
+        min(CASE WHEN intervention = 'baseline' THEN end_date_unix_epoc END) AS baseline_end,
+        min(CASE WHEN intervention = 'upvote_only' THEN start_date_unix_epoc END) AS upvote_start,
+        min(CASE WHEN intervention = 'upvote_only' THEN end_date_unix_epoc END) AS upvote_end
+        FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_txt`
+        where subreddit not in ('vegan', 'unpopularopinion')
+        group by subreddit) as dt
+LEFT JOIN cart on cart.subreddit = dt.subreddit
+LEFT JOIN `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as ctr
+    ON ctr.subreddit = cart.ctr_subreddit
 
 
 

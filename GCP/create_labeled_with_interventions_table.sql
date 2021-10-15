@@ -18,4 +18,4 @@ create table `citp-sm-reactions.reddit_clean_comments.labled_comments_with_inter
     );
 --     create table citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc_new as (
 -- SELECT TRIM(subreddit) AS subreddit, intervention, start_date, end_date, start_date_unix_epoc, end_date_unix_epoc
--- FROM citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc); 
+-- FROM citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc);
