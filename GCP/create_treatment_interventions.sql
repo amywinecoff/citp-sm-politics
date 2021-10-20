@@ -1,3 +1,5 @@
+---create a table that only contains subreddits' first two intervention periods. So, if a subreddit had three different
+---periods, only retain the first two
 create table `citp-sm-reactions.reddit_clean_comments.reaction_interventions_txt` as (
 with max_ints as (
     select subreddit
