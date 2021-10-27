@@ -109,6 +109,48 @@ JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_upv
 WHERE txt.period = 'baseline'
 );
 
+--TODO: adding up the values from the excel sheet and the sql code for the posts within the selected subreddit windows are not eequal.
+--not sure why yet
+create table `citp-sm-reactions.reddit_clean_comments.test_union_ctr_txt` as (
+SELECT post_id, link_id, sub_id, subreddit, author, intervention as period, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+             generalized_call, situational_call_for_action,
+             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
+WHERE subreddit in ('atheism', 'Conservative', 'exmuslim', 'politics', 'ukpolitics')
+AND intervention in ('baseline', 'upvote_only')
+UNION DISTINCT
+SELECT post_id, link_id, sub_id, ctr_subreddit as subreddit, author, period, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+             generalized_call, situational_call_for_action,
+             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_ctr`
+WHERE (txt_subreddit = "atheism" AND ctr_subreddit = "PoliticalHumor") OR
+       (txt_subreddit = "Conservative" AND ctr_subreddit = "Republican") OR
+        (txt_subreddit = "exmuslim" AND ctr_subreddit = "Anarchism") OR
+        (txt_subreddit = "politics" AND ctr_subreddit = "progressive") OR
+       (txt_subreddit = "ukpolitics" AND ctr_subreddit = "Anarcho_Capitalism")
+        AND period != "no_period"
+);
+
+
+
+
+-- select distinct(intervention) from `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
+-- SELECT m.post_id, m.subreddit, j.txt_subreddit , j.ctr_subreddit
+-- FROM `citp-sm-reactions.reddit_clean_comments.labeled_comments_with_interventions` m
+-- INNER JOIN (SELECT txt_subreddit, ctr_subreddit, post_id from `citp-sm-reactions.reddit_clean_comments.ctr_subreddits_for_upvote_txt`
+--                     WHERE (txt_subreddit = "atheism" AND ctr_subreddit = "conspiracy")) j
+--     ON m.subreddit = j.ctr_subreddit and m.post_id = j.post_id
+-- ORDER BY j.txt_subreddit DESC;
+
+
+-- SELECT post_id, subreddit
+-- FROM `citp-sm-reactions.reddit_clean_comments.labeled_comments_with_interventions`
+-- where post_id in (SELECT post_id from `citp-sm-reactions.reddit_clean_comments.ctr_subreddits_for_upvote_txt`
+--                     WHERE (txt_subreddit = 'atheism' AND ctr_subreddit = "conspiracy") OR
+--                     (txt_subreddit = 'Conservative' AND ctr_subreddit = "Republican"))
+
 ---- with ts as (
 --    SELECT txt.txt_subreddit,
 --       ctr.ctr_subreddit,
