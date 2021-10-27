@@ -125,14 +125,12 @@ SELECT post_id, link_id, sub_id, ctr_subreddit as subreddit, author, period, who
              generalized_call, situational_call_for_action,
              collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
 FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_ctr`
-WHERE (txt_subreddit = "atheism" AND ctr_subreddit = "PoliticalHumor") OR
-       (txt_subreddit = "Conservative" AND ctr_subreddit = "Republican") OR
-        (txt_subreddit = "exmuslim" AND ctr_subreddit = "Anarchism") OR
-        (txt_subreddit = "politics" AND ctr_subreddit = "progressive") OR
-       (txt_subreddit = "ukpolitics" AND ctr_subreddit = "Anarcho_Capitalism")
-        AND period != "no_period"
+WHERE (txt_subreddit = "atheism" AND ctr_subreddit = "PoliticalHumor" AND period != "no_period") OR
+       (txt_subreddit = "Conservative" AND ctr_subreddit = "Republican" AND period != "no_period") OR
+        (txt_subreddit = "exmuslim" AND ctr_subreddit = "Anarchism" AND period != "no_period") OR
+        (txt_subreddit = "politics" AND ctr_subreddit = "progressive" AND period != "no_period") OR
+       (txt_subreddit = "ukpolitics" AND ctr_subreddit = "Anarcho_Capitalism" AND period != "no_period")
 );
-
 
 
 
