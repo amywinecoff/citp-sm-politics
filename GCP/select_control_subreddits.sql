@@ -109,10 +109,9 @@ JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_upv
 WHERE txt.period = 'baseline'
 );
 
---TODO: adding up the values from the excel sheet and the sql code for the posts within the selected subreddit windows are not eequal.
---not sure why yet
-create table `citp-sm-reactions.reddit_clean_comments.test_union_ctr_txt` as (
-SELECT post_id, link_id, sub_id, subreddit, author, intervention as period, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+
+create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_upvote_ctr_txt` as (
+SELECT post_id, link_id, sub_id, subreddit, author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
              counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
              generalized_call, situational_call_for_action,
              collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
@@ -120,7 +119,7 @@ FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
 WHERE subreddit in ('atheism', 'Conservative', 'exmuslim', 'politics', 'ukpolitics')
 AND intervention in ('baseline', 'upvote_only')
 UNION DISTINCT
-SELECT post_id, link_id, sub_id, ctr_subreddit as subreddit, author, period, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+SELECT post_id, link_id, sub_id, ctr_subreddit as subreddit, author, period, 'control' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
              counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
              generalized_call, situational_call_for_action,
              collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
