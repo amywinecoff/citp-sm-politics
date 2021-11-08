@@ -23,7 +23,7 @@ create table `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distin
             sub.counter_argument_structure, sub.emotional_language,sub.other, sub.you_in_the_epicenter, sub.empathy_reciprocity,
             sub.generalized_call, sub.situational_call_for_action,
             sub.collective_rhetoric, sub.ungrounded_argument,
-            rxn.intervention, rxn.start_date_unix_epoc as int_start_unix_time, rxn.end_date_unix_epoc as int_end_unix_time, sub.unix_epoc_time as post_unix_time
+            rxn.intervention, rxn.start_date_unix_epoc as int_start_unix_time, rxn.end_date_unix_epoc as int_end_unix_time, sub.unix_epoc_time
         FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as sub
         INNER JOIN `citp-sm-reactions.reddit_clean_comments.reaction_interventions` as rxn
             ON (sub.unix_epoc_time >= rxn.start_date_unix_epoc) AND (sub.unix_epoc_time <= rxn.end_date_unix_epoc)
