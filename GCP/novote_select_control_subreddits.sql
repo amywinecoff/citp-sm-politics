@@ -1,5 +1,5 @@
  create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr` as (
- with cart as (--create the Cartesian product between novotetreatment subreddits and all other subreddits
+ with cart as (--create the Cartesian product between novotetreatment subreddits and all other subreddits. this allows us to see the effect for the txt subreddit along with all possible combinations with other subreddits
      SELECT  distinct(ctr.subreddit) as ctr_subreddit, txt.subreddit
      FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions` as txt, `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as ctr
      WHERE txt.subreddit != ctr.subreddit AND ctr.subreddit not in (select distinct(subreddit) from `citp-sm-reactions.reddit_clean_comments.reaction_interventions`)
@@ -15,7 +15,7 @@
          ELSE 'no_period'
      END as period
  FROM (SELECT subreddit as txt_subreddit,
-         min(CASE WHEN intervention = 'baseline' THEN start_date_unix_epoc END) AS baseline_start,
+         min(CASE WHEN intervention = 'baseline' THEN start_date_unix_epoc END) AS baseline_start,--use min b/c we only want one instance of the date. any other order aggregator would work
          min(CASE WHEN intervention = 'baseline' THEN end_date_unix_epoc END) AS baseline_end,
          min(CASE WHEN intervention = 'no_votes' THEN start_date_unix_epoc END) AS novote_start,
          min(CASE WHEN intervention = 'no_votes' THEN end_date_unix_epoc END) AS novote_end
