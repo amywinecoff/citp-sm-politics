@@ -20,7 +20,7 @@
          min(CASE WHEN intervention = 'no_votes' THEN start_date_unix_epoc END) AS novote_start,
          min(CASE WHEN intervention = 'no_votes' THEN end_date_unix_epoc END) AS novote_end
          FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions`
-         where subreddit in ('vegan', 'unpopularopinion')--vegan and unpopularopinion are the only subreddits that went from baseline to no_votes
+         where subreddit in ('vegan', 'unpopularopinion')--vegan and unpopularopinion are the only subreddits that went from baseline to no_votes. However, at present no data exists for vegan during the invervention period
          group by subreddit) as dt
  LEFT JOIN cart on cart.subreddit = dt.txt_subreddit
  LEFT JOIN `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as ctr
@@ -67,8 +67,8 @@ SELECT subreddit as txt_subreddit, intervention as period,
     count(post_id) as txt_obs_per_period,
 from `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
 group by intervention, subreddit
-HAVING intervention != 'upvote_only'
-order by subreddit, intervention);;
+HAVING intervention != 'upvote_only' and subreddit in ('vegan', 'unpopularopinion')
+order by subreddit, intervention);
 
 -- create a table joining the treatment average language values and control average language values to allow correlations to be calculated elsewhere
 -- too hard to figure out how to do rowise correlations within SQL
@@ -108,46 +108,29 @@ JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_nov
 WHERE txt.period = 'baseline'
 );
 
+select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_txt_and_ctr_avg`
+--download data as a csv to calculate correlations between treatment and potential controls
 
---create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_novote_ctr_txt` as (
---SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,
---            author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
---             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
---             generalized_call, situational_call_for_action,
---             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
---FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
---WHERE subreddit in ('atheism', 'Conservative', 'exmuslim', 'politics', 'ukpolitics')
---AND intervention in ('baseline', 'upvote_only')
---UNION DISTINCT
---SELECT post_id, link_id, sub_id, unix_epoc_time, ctr_subreddit as subreddit, txt_subreddit as matched_subreddit,
---author, period, 'control' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
---             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
---             generalized_call, situational_call_for_action,
---             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
---FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr`
---WHERE
---    (txt_subreddit = "atheism" AND ctr_subreddit = "PoliticalHumor" AND period != "no_period") OR
---    (txt_subreddit = "atheism" AND ctr_subreddit = "Libertarian" AND period != "no_period") OR
---    (txt_subreddit = "atheism" AND ctr_subreddit = "MensRights" AND period != "no_period") OR
---    (txt_subreddit = "atheism" AND ctr_subreddit = "iran" AND period != "no_period") OR
---    (txt_subreddit = "atheism" AND ctr_subreddit = "privacy" AND period != "no_period")
---     OR
---    (txt_subreddit = "Conservative" AND ctr_subreddit = "Republican" AND period != "no_period") OR
---    (txt_subreddit = "Conservative" AND ctr_subreddit = "conservatives" AND period != "no_period") OR
---    (txt_subreddit = "Conservative" AND ctr_subreddit = "Liberal" AND period != "no_period")
---    OR
---    (txt_subreddit = "exmuslim" AND ctr_subreddit = "911truth" AND period != "no_period") OR
---    (txt_subreddit = "exmuslim" AND ctr_subreddit = "india" AND period != "no_period")
---    OR
---    (txt_subreddit = "politics" AND ctr_subreddit = "Anarcho_Capitalism" AND period != "no_period") OR
---    (txt_subreddit = "politics" AND ctr_subreddit = "PoliticalDiscussion" AND period != "no_period") OR
---    (txt_subreddit = "politics" AND ctr_subreddit = "conspiracy" AND period != "no_period") OR
---    (txt_subreddit = "politics" AND ctr_subreddit = "occupywallstreet" AND period != "no_period")
---    OR
---    (txt_subreddit = "ukpolitics" AND ctr_subreddit = "progressive" AND period != "no_period") OR
---    (txt_subreddit = "ukpolitics" AND ctr_subreddit = "moderatepolitics" AND period != "no_period") OR
---    (txt_subreddit = "ukpolitics" AND ctr_subreddit = "democrats" AND period != "no_period")
---);
+
+create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_novote_ctr_txt` as (
+SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,
+            author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+             generalized_call, situational_call_for_action,
+             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
+WHERE subreddit in ('unpopularopinion')
+AND intervention in ('baseline', 'no_votes')
+UNION DISTINCT
+SELECT post_id, link_id, sub_id, unix_epoc_time, ctr_subreddit as subreddit, txt_subreddit as matched_subreddit,
+author, period, 'control' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+             generalized_call, situational_call_for_action,
+             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr`
+WHERE
+    (txt_subreddit = "unpopularopinion" AND ctr_subreddit = "PoliticalHumor" AND period != "no_period")
+);
 --
 
 

@@ -11,3 +11,17 @@ FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc` as ba
 INNER JOIN max_ints on max_ints.subreddit = base.subreddit
 WHERE int_order < 3
 ORDER BY subreddit, intervention);
+
+---create a table that will hopefully only contain the subreddits that had multiple interventions, where the
+---second intervention was switching from upvote to novote
+create table `citp-sm-reactions.reddit_clean_comments.reaction_interventions_upvote_novote` as (
+with max_ints as (
+    select subreddit
+    FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc`
+    group by subreddit
+    having max(int_order) > 2) --this means they should have had three interventions
+SELECT base.*
+FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_epoc` as base
+INNER JOIN max_ints on max_ints.subreddit = base.subreddit
+WHERE int_order > 1
+ORDER BY subreddit, intervention);
