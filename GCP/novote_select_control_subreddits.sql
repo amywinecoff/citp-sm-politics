@@ -109,7 +109,9 @@ WHERE txt.period = 'baseline'
 );
 
 select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_txt_and_ctr_avg`
---download data as a csv to calculate correlations between treatment and potential controls
+---download this data as a csv from BigQuery and run the correlations in Excel. Then use whatever
+---control subreddits you select based on the correlation + sample size analysis you do in Excel to
+---determine the subreddit contingencies in the table below.
 
 
 create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_novote_ctr_txt` as (

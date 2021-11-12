@@ -109,6 +109,10 @@ JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_upv
 WHERE txt.period = 'baseline'
 );
 
+select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_txt_and_ctr_avg`
+---download this data as a csv from BigQuery and run the correlations in Excel. Then use whatever
+---control subreddits you select based on the correlation + sample size analysis you do in Excel to
+---determine the subreddit contingencies in the table below.
 
 create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_upvote_ctr_txt` as (
 SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,

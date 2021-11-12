@@ -35,7 +35,7 @@
 --matching to the treatment subreddits. Note that the aggregates are also computed for the upvote period so that subreddits can also
 --be matched on number of observations during the intervention, but the average language subcomponent values SHOULD NOT be used for
 --selection of the appropriate controls
- create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_ctr` as (
+ create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_ctr` as (
  SELECT txt_subreddit, ctr_subreddit, period,
      avg(counter_argument_structure) as ctr_avg_counter_argument_structure,
      avg(emotional_language) as ctr_avg_emotional_language,
@@ -47,13 +47,13 @@
      avg(collective_rhetoric) as ctr_avg_collective_rhetoric,
      avg(ungrounded_argument) as ctr_avg_ungrounded_argument,
      count(post_id) as ctr_obs_per_period,
- from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr`
+ from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_ctr`
  group by ctr_subreddit, period, txt_subreddit
  HAVING period != 'no_period'
  order by txt_subreddit, ctr_subreddit, period);
 
 --create a table that contains the same info for the upvote treatment subreddits for subsequent matching to the control subreddits
-create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_txt` as (
+create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_txt` as (
 SELECT subreddit as txt_subreddit, intervention as period,
     avg(counter_argument_structure) as txt_avg_counter_argument_structure,
     avg(emotional_language) as txt_avg_emotional_language,
@@ -67,7 +67,7 @@ SELECT subreddit as txt_subreddit, intervention as period,
     count(post_id) as txt_obs_per_period,
 from `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
 group by intervention, subreddit
-HAVING intervention != 'upvote_only' and subreddit in ('vegan', 'unpopularopinion')
+HAVING intervention != 'baseline' and subreddit in ('Conservative', 'GenderCritical', 'politics')
 order by subreddit, intervention);
 
 -- create a table joining the treatment average language values and control average language values to allow correlations to be calculated elsewhere
