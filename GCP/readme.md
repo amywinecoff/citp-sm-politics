@@ -14,4 +14,6 @@ The scripts with the names `{VAR}_select_control_subreddits.sql` contain mutiple
 
 If you change the code and rerun the analysis, you will need to manually edit this file for any tables that you might want to put in the paper. **It is not generated automatically**. 
 
+**Also note that if you run any of the previous code to create a smaller dataset using random or stratefied selection of data, the statistics in this table will not be correct for the data that is actually used in the analysis. It will only be accurate for the data you have sampled from. If you do that, be sure to make a note in the paper methods section**
+
 
