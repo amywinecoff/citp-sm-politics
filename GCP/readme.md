@@ -1,3 +1,5 @@
+## Description of Files
+
 The notebook file `generate_subcategory_labeled.ipynb` is the code that will take the csv data from the GCP bucket `dialogue_labels` and add it into the table `citp-sm-reactions.reddit_clean_comments.subcategory_labeled`\. 
 \\
 If you have your your data somewhere else (e.g., Google Drive), you will need to figure out how to get it into the GCP bucket. There is some code in this repo that will do a transfer of csvs from Google Drive to GCP, but that is a silly thing to do, so I'm not going to tell you which notebook does it or document that notebook. You can spend time attempting to decode my messy notebooks to do the Google Drive --> GCP transfer, or use that same energy just to figure out how to transfer data directly from its source to the GCP bucket. Your call, but I would highly recommend the latter since it is way faster and less silly. \
