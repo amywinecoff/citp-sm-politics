@@ -10,7 +10,7 @@
              ctr.generalized_call, ctr.situational_call_for_action,
              ctr.collective_rhetoric, ctr.ungrounded_argument, ctr.nest_level, byte_length(ctr.body) as body_length, author_count.author_posts_per_subreddit,
      CASE
-         WHEN ctr.unix_epoc_time >= baseline_start AND ctr.unix_epoc_time <= baseline_end THEN 'baseline'
+         WHEN ctr.unix_epoc_time >= baseline_start AND ctr.unix_epoc_time <= baseline_end THEN 'up_vote'
          WHEN ctr.unix_epoc_time >= novote_start AND ctr.unix_epoc_time <= novote_end THEN 'no_votes'
          ELSE 'no_period'
      END as period
@@ -72,7 +72,7 @@ order by subreddit, intervention);
 
 -- create a table joining the treatment average language values and control average language values to allow correlations to be calculated elsewhere
 -- too hard to figure out how to do rowise correlations within SQL
-create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_txt_and_ctr_avg` as (
+create table `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_txt_and_ctr_avg` as (
 SELECT txt.txt_subreddit,
       ctr.ctr_subreddit,
       txt.txt_obs_per_period as txt_obs_per_baseline,
@@ -95,42 +95,42 @@ SELECT txt.txt_subreddit,
       ctr.ctr_avg_situational_call_for_action,
       ctr.ctr_avg_collective_rhetoric,
       ctr.ctr_avg_ungrounded_argument,
-FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_txt` txt
-JOIN `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_ctr` ctr
+FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_txt` txt
+JOIN `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_ctr` ctr
    ON ctr.txt_subreddit = txt.txt_subreddit and ctr.period = txt.period
 JOIN (SELECT txt_subreddit, txt_obs_per_period as txt_obs_per_novote
-       from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_txt`
+       from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_txt`
        WHERE period = 'no_votes') txt_obs on txt_obs.txt_subreddit = txt.txt_subreddit
 JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_novote
-       from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_ctr`
+       from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_avg_ctr`
        WHERE period = 'no_votes') ctr_obs on ctr_obs.ctr_subreddit = ctr.ctr_subreddit
            and ctr_obs.txt_subreddit = ctr.txt_subreddit
 WHERE txt.period = 'upvote_only'--upvote only serves as the baseline for this dataset
 );
 
-select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_txt_and_ctr_avg`
+select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_novote_txt_and_ctr_avg`
 --download data as a csv to calculate correlations between treatment and potential controls
 
 
-create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_novote_ctr_txt` as (
-SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,
-            author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
-             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
-             generalized_call, situational_call_for_action,
-             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
-FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
-WHERE subreddit in ('unpopularopinion')
-AND intervention in ('baseline', 'no_votes')
-UNION DISTINCT
-SELECT post_id, link_id, sub_id, unix_epoc_time, ctr_subreddit as subreddit, txt_subreddit as matched_subreddit,
-author, period, 'control' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
-             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
-             generalized_call, situational_call_for_action,
-             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
-FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr`
-WHERE
-    (txt_subreddit = "unpopularopinion" AND ctr_subreddit = "PoliticalHumor" AND period != "no_period")
-);
+--create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_novote_ctr_txt` as (
+--SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,
+--            author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+--             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+--             generalized_call, situational_call_for_action,
+--             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+--FROM `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
+--WHERE subreddit in ('unpopularopinion')
+--AND intervention in ('baseline', 'no_votes')
+--UNION DISTINCT
+--SELECT post_id, link_id, sub_id, unix_epoc_time, ctr_subreddit as subreddit, txt_subreddit as matched_subreddit,
+--author, period, 'control' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
+--             counter_argument_structure, emotional_language,other, you_in_the_epicenter, empathy_reciprocity,
+--             generalized_call, situational_call_for_action,
+--             collective_rhetoric, ungrounded_argument, nest_level, body_length, author_posts_per_subreddit
+--FROM `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_ctr`
+--WHERE
+--    (txt_subreddit = "unpopularopinion" AND ctr_subreddit = "PoliticalHumor" AND period != "no_period")
+--);
 --
 
 
