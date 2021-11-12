@@ -65,7 +65,7 @@ SELECT subreddit as txt_subreddit, intervention as period,
     avg(collective_rhetoric) as txt_avg_collective_rhetoric,
     avg(ungrounded_argument) as txt_avg_ungrounded_argument,
     count(post_id) as txt_obs_per_period,
-from `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt`
+from `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct_txt_upvote_novote`
 group by intervention, subreddit
 HAVING intervention != 'baseline' and subreddit in ('Conservative', 'GenderCritical', 'politics')
 order by subreddit, intervention);
@@ -105,7 +105,7 @@ JOIN (SELECT ctr_subreddit, txt_subreddit, ctr_obs_per_period as ctr_obs_per_nov
        from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_avg_ctr`
        WHERE period = 'no_votes') ctr_obs on ctr_obs.ctr_subreddit = ctr.ctr_subreddit
            and ctr_obs.txt_subreddit = ctr.txt_subreddit
-WHERE txt.period = 'baseline'
+WHERE txt.period = 'upvote_only'--upvote only serves as the baseline for this dataset
 );
 
 select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_novote_txt_and_ctr_avg`
