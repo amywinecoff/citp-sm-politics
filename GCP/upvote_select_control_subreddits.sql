@@ -114,6 +114,11 @@ select * from `citp-sm-reactions.reddit_clean_comments.subreddits_for_upvote_txt
 ---control subreddits you select based on the correlation + sample size analysis you do in Excel to
 ---determine the subreddit contingencies in the table below.
 
+
+
+---The selection of treatment/control combos below was based on the file baseline_upvote_correlations.csv to maximize baseline correlation
+---and at least sort of get the sample sizes closer than they would be based on a single control subreddit alone
+
 create table `citp-sm-reactions.reddit_clean_comments.subreddits_union_upvote_ctr_txt` as (
 SELECT post_id, link_id, sub_id, unix_epoc_time, subreddit, subreddit as matched_subreddit,
             author, intervention as period, 'treatment' as group_type, who_instead_of_what, we_vs_them, fact_related_argument, structured_argument,
