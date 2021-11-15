@@ -10,7 +10,7 @@
              ctr.generalized_call, ctr.situational_call_for_action,
              ctr.collective_rhetoric, ctr.ungrounded_argument, ctr.nest_level, byte_length(ctr.body) as body_length, author_count.author_posts_per_subreddit,
      CASE
-         WHEN ctr.unix_epoc_time >= baseline_start AND ctr.unix_epoc_time <= baseline_end THEN 'up_vote'
+         WHEN ctr.unix_epoc_time >= baseline_start AND ctr.unix_epoc_time <= baseline_end THEN 'upvote_only'
          WHEN ctr.unix_epoc_time >= novote_start AND ctr.unix_epoc_time <= novote_end THEN 'no_votes'
          ELSE 'no_period'
      END as period
@@ -20,7 +20,6 @@
          min(CASE WHEN intervention = 'no_votes' THEN start_date_unix_epoc END) AS novote_start,
          min(CASE WHEN intervention = 'no_votes' THEN end_date_unix_epoc END) AS novote_end
          FROM `citp-sm-reactions.reddit_clean_comments.reaction_interventions_upvote_novote`
-         ---where subreddit in ('vegan', 'unpopularopinion')--vegan and unpopularopinion are the only subreddits that went from baseline to no_votes. However, at present no data exists for vegan during the invervention period
          group by subreddit) as dt
  LEFT JOIN cart on cart.subreddit = dt.txt_subreddit
  LEFT JOIN `citp-sm-reactions.reddit_clean_comments.subcategory_labeled_distinct` as ctr
