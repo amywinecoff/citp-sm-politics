@@ -3,7 +3,7 @@
 The notebook file `generate_subcategory_labeled.ipynb` is the code that will take the csv data from the GCP bucket `dialogue_labels` and add it into the table `citp-sm-reactions.reddit_clean_comments.subcategory_labeled`. 
 
 
-If you have your your data somewhere else (e.g., Google Drive), you will need to figure out how to get it into the GCP bucket. There is some code in this repo that will do a transfer of csvs from Google Drive to GCP, but that is a silly thing to do, so I'm not going to tell you which code snippet does it or provide any documentation. I would highly recommend just figuring out how to transfer the data directly from its source to the GCP bucket. \
+If you have your your data somewhere else (e.g., Google Drive), you will need to figure out how to get it into the GCP bucket. There is some code in this repo that will do a transfer of csvs from Google Drive to GCP, but that is a silly thing to do, so I'm not going to spend time cleaning up and documenting that code. I would highly recommend just figuring out how to transfer the data directly from its source to the GCP bucket. \
 \
 Note that this code to transfer new csvs into `citp-sm-reactions.reddit_clean_comments.subcategory_labeled` does do filepath matching to make sure it does not copy any csvs with the EXACT same file path into the table. **However, if you add more files that have the same csv name (i.e., duplicate data) but store them in different folders (e.g., `\politics` and `_politics`), the resulting table will contain data duplicates. Also, if you add in other random stuff to this bucket, it will likely break this code and/or upload random stuff that you don't want into the table** 
 
